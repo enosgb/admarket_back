@@ -1,0 +1,28 @@
+[tool.black]
+line-length = 88
+target-version = ["py312"]
+exclude = '''
+/(
+    \.git
+  | \.venv
+  | venv
+  | migrations
+)/
+'''
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+select = ["E", "F", "W", "I"]
+ignore = ["E501"]
+
+exclude = [
+  ".git",
+  ".venv",
+  "venv",
+  "migrations",
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
