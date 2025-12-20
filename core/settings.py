@@ -148,3 +148,6 @@ CLOUDINARY_STORAGE = {
     "API_SECRET": os.getenv("CLOUDINARY_API_SECRET"),
     "SECURE": True,
 }
+
+# For remove swagger warning in tests
+SWAGGER_USE_COMPAT_RENDERERS = False
