@@ -38,6 +38,8 @@ class RootView(APIView):
             "users": reverse("user_list_create", request=request),
             "login": reverse("login", request=request),
             "logout": reverse("logout", request=request),
+            "resetPassword": reverse("reset_password", request=request),
+            "resetPasswordConfirm": reverse("reset_password_confirm", request=request),
         }
         return Response(routes)
 
