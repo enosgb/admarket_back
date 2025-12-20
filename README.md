@@ -2,13 +2,13 @@
 
 API for listing and manage Ads
 
-- [ ] Authentication 
+- [x] Authentication 
   - [x] Login
   - [x] Logout
   - [x] Email util
   - [x] Reset password
   - [x] Change password
-  - [ ] Testes
+  - [x] Testes
 - [ ] Users management
   - [x] CRUD
   - [x] Filters and Sorting  
@@ -62,6 +62,7 @@ cd admarket_back
 - Pygments==2.19.2
 - pytest==9.0.2
 - pytest-django==4.11.1
+- pytest-mock==3.15.1
 - python-dotenv==1.2.1
 - pytokens==0.3.0
 - pytz==2025.2
