@@ -7,7 +7,7 @@ API for listing and manage Ads
   - [x] Logout
   - [x] Email util
   - [x] Reset password
-  - [ ] Change password
+  - [x] Change password
   - [ ] Testes
 - [ ] Users management
   - [x] CRUD

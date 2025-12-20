@@ -40,6 +40,7 @@ class RootView(APIView):
             "logout": reverse("logout", request=request),
             "resetPassword": reverse("reset_password", request=request),
             "resetPasswordConfirm": reverse("reset_password_confirm", request=request),
+            "changePassword": reverse("change_password", request=request),
         }
         return Response(routes)
 

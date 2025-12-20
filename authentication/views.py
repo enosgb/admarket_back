@@ -3,7 +3,6 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.tokens import default_token_generator
 from rest_framework import generics, status
 from rest_framework.authentication import BasicAuthentication, SessionAuthentication
-from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -13,6 +12,7 @@ from users.serializers import UserSerializer
 from utils.send_email import SendEmail
 
 from .serializers import (
+    ChangePasswordSerializer,
     LoginRequestSerializer,
     ResetPasswordConfirmSerializer,
     ResetPasswordSerializer,
@@ -114,3 +114,20 @@ class ResetPasswordConfirmView(generics.GenericAPIView):
                 {"detail": "Token inválido ou expirado."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
+
+class ChangePasswordView(generics.UpdateAPIView):
+    serializer_class = ChangePasswordSerializer
+    authentication_classes = [BasicAuthentication, SessionAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user
+
+    def update(self, request, *args, **kwargs):
+        serializer = self.get_serializer(
+            data=request.data, context={"request": request}
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({"detail": "Senha alterada com sucesso."}, status=200)
