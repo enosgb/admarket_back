@@ -7,6 +7,7 @@ API for listing and manage Ads
   - [ ] Logout
   - [ ] Reset password
   - [ ] Forgot password
+- [ ] Users management
 - [ ] Categories management
 - [ ] Products management
 - [ ] Store management
@@ -37,6 +38,7 @@ cd admarket_back
 - black v25.12.0
 - ruff v0.14.10
 - djangorestframework v3.16.1
+- drf-yasg v1.21.11
 
 ## Database - Docker PostgreSQL
 ```bash
