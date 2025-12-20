@@ -8,15 +8,19 @@ API for listing and manage Ads
   - [x] Email util
   - [x] Reset password
   - [x] Change password
-  - [x] Testes
+  - [x] Tests
 - [ ] Users management
   - [x] CRUD
   - [x] Filters and Sorting  
   - [x] Tests
   - [ ] Cache
-- [ ] Categories management
-- [ ] Products management
-- [ ] Store management
+- [ ] Ads Categories management
+  - [x] CRUD
+  - [x] Filters and Sorting  
+  - [x] Tests
+  - [ ] Cache
+- [ ] Ads Products management
+- [ ] Ads Store management
 - [ ] Ads management
 - [ ] Marketplace
 - [ ] Features

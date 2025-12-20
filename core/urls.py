@@ -33,14 +33,19 @@ class RootView(APIView):
 
     def get(self, request, *args, **kwargs):
         routes = {
+            # docs
             "swagger": reverse("schema-swagger-ui", request=request),
             "redoc": reverse("schema-redoc", request=request),
+            # users
             "users": reverse("user_list_create", request=request),
+            # authentication
             "login": reverse("login", request=request),
             "logout": reverse("logout", request=request),
             "resetPassword": reverse("reset_password", request=request),
             "resetPasswordConfirm": reverse("reset_password_confirm", request=request),
             "changePassword": reverse("change_password", request=request),
+            # ads categories
+            "categories": reverse("ads_categories_list", request=request),
         }
         return Response(routes)
 
@@ -64,6 +69,8 @@ urlpatterns = [
     path("api/v1/users/", include("users.urls")),
     # Auth
     path("api/v1/auth/", include("authentication.urls")),
+    # Ads
+    path("api/v1/ads/", include("ads.urls")),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

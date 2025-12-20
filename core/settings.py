@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     "drf_yasg",
     "django_filters",
     "users",
+    "ads",
 ]
 
 MIDDLEWARE = [
