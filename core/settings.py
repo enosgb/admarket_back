@@ -149,5 +149,10 @@ CLOUDINARY_STORAGE = {
     "SECURE": True,
 }
 
-# For remove swagger warning in tests
+# Swagger conf
+
 SWAGGER_USE_COMPAT_RENDERERS = False
+
+SWAGGER_SETTINGS = {
+    "USE_SESSION_AUTH": False,
+}

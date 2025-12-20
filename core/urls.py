@@ -36,6 +36,8 @@ class RootView(APIView):
             "swagger": reverse("schema-swagger-ui", request=request),
             "redoc": reverse("schema-redoc", request=request),
             "users": reverse("user_list_create", request=request),
+            "login": reverse("login", request=request),
+            "logout": reverse("logout", request=request),
         }
         return Response(routes)
 
@@ -57,6 +59,8 @@ urlpatterns = [
     path("api/v1/", RootView.as_view(), name="root"),
     # Users
     path("api/v1/users/", include("users.urls")),
+    # Auth
+    path("api/v1/auth/", include("authentication.urls")),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

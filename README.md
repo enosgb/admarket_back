@@ -3,10 +3,11 @@
 API for listing and manage Ads
 
 - [ ] Authentication 
-  - [ ] Login
-  - [ ] Logout
+  - [x] Login
+  - [x] Logout
   - [ ] Reset password
   - [ ] Forgot password
+  - [ ] Testes
 - [ ] Users management
   - [x] CRUD
   - [x] Filters and Sorting  
