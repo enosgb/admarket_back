@@ -36,6 +36,7 @@ cd admarket_back
 - psycopg2-binary v2.9.11
 - black v25.12.0
 - ruff v0.14.10
+- djangorestframework v3.16.1
 
 ## Database - Docker PostgreSQL
 ```bash
