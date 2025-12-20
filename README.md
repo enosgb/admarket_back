@@ -10,7 +10,6 @@ API for listing and manage Ads
 - [ ] Users management
   - [x] CRUD
   - [x] Filters and Sorting  
-  - [ ] Pagination
   - [ ] Tests
   - [ ] Cache
 - [ ] Categories management
@@ -23,7 +22,7 @@ API for listing and manage Ads
   - [ ] Favorites
   - [ ] Delay - Front End Loading
 - [ ] Optimization
-  - [ ] Pagination
+  - [x] Pagination
   - [ ] Cache
 - [ ] Tests
 
