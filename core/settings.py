@@ -156,3 +156,13 @@ SWAGGER_USE_COMPAT_RENDERERS = False
 SWAGGER_SETTINGS = {
     "USE_SESSION_AUTH": False,
 }
+
+
+# Config for send emails
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.getenv("GMAIL_APP_LOGIN")
+EMAIL_HOST_PASSWORD = os.getenv("GMAIL_APP_PASS")
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

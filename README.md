@@ -5,6 +5,7 @@ API for listing and manage Ads
 - [ ] Authentication 
   - [x] Login
   - [x] Logout
+  - [x] Email util
   - [ ] Reset password
   - [ ] Forgot password
   - [ ] Testes
