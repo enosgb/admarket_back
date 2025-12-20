@@ -17,7 +17,6 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 
-
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -29,6 +28,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "drf_yasg",
+    "django_filters",
     "users",
 ]
 
@@ -118,6 +118,11 @@ AUTH_USER_MODEL = "users.User"
 # Rest Framework
 
 REST_FRAMEWORK = {
+    "DEFAULT_FILTER_BACKENDS": [
+        "django_filters.rest_framework.DjangoFilterBackend",
+        "rest_framework.filters.SearchFilter",
+        "rest_framework.filters.OrderingFilter",
+    ],
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework.authentication.SessionAuthentication",
         "rest_framework.authentication.BasicAuthentication",
@@ -126,7 +131,7 @@ REST_FRAMEWORK = {
 
 # Storage
 
-MEDIA_URL = '/media/'
+MEDIA_URL = "/media/"
 
 STORAGES = {
     "default": {

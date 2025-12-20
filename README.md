@@ -9,9 +9,10 @@ API for listing and manage Ads
   - [ ] Forgot password
 - [ ] Users management
   - [x] CRUD
-  - [ ] Filters and Sorting
-  - [ ] Cache
+  - [x] Filters and Sorting  
+  - [ ] Pagination
   - [ ] Tests
+  - [ ] Cache
 - [ ] Categories management
 - [ ] Products management
 - [ ] Store management
@@ -43,6 +44,7 @@ cd admarket_back
 - click==8.3.1
 - cloudinary==1.44.1
 - Django==6.0
+- django-filter==25.2
 - django-cloudinary-storage==0.3.0
 - djangorestframework==3.16.1
 - drf-yasg==1.21.11
