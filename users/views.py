@@ -5,6 +5,7 @@ from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 
 from .models import User
+from .permissions import IsAdminOrSelf
 from .serializers import UserSerializer
 
 
@@ -12,7 +13,7 @@ class UserListAndCreateView(generics.ListCreateAPIView):
     queryset = User.objects.all().order_by("-id")
     serializer_class = UserSerializer
     authentication_classes = [BasicAuthentication, SessionAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAdminOrSelf]
     parser_classes = [MultiPartParser, FormParser]
 
     filter_backends = [
@@ -31,6 +32,6 @@ class UserRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     authentication_classes = [BasicAuthentication, SessionAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAdminOrSelf]
     parser_classes = [MultiPartParser, FormParser]
     lookup_field = "id"

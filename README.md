@@ -10,7 +10,7 @@ API for listing and manage Ads
 - [ ] Users management
   - [x] CRUD
   - [x] Filters and Sorting  
-  - [ ] Tests
+  - [x] Tests
   - [ ] Cache
 - [ ] Categories management
 - [ ] Products management

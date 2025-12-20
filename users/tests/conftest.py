@@ -1,8 +1,11 @@
 # conftest.py
+from unittest.mock import patch
+
 import pytest
 from rest_framework.test import APIClient
+
 from users.models import User
-from unittest.mock import patch
+
 
 @pytest.fixture
 def api_client():
