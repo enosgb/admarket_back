@@ -8,11 +8,12 @@ from rest_framework.permissions import IsAuthenticated
 
 from ads.filters import AdFilter
 
-from .models import Ad, Category, Product, ProductImage, Store
+from .models import Ad, Category, Favorite, Product, ProductImage, Store
 from .permissions import IsAdminOrReadOnly
 from .serializers import (
     AdSerializer,
     CategorySerializer,
+    FavoriteSerializer,
     ProductCreateUpdateSerializer,
     ProductDetailSerializer,
     ProductImageCreateSerializer,
@@ -211,3 +212,38 @@ class AdRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         return Ad.objects.select_related("store", "product").prefetch_related(
             "product__images"
         )
+
+
+# Favorites
+class FavoriteListCreateView(generics.ListCreateAPIView):
+    serializer_class = FavoriteSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [BasicAuthentication, SessionAuthentication]
+
+    filter_backends = [
+        DjangoFilterBackend,
+        filters.SearchFilter,
+        filters.OrderingFilter,
+    ]
+    filterset_fields = ["product", "created_at"]
+    search_fields = ["product__name", "product__category__name"]
+    ordering_fields = ["created_at", "product__name"]
+    ordering = ["-created_at"]
+
+    def get_queryset(self):
+        product_images = Prefetch("product__images")
+        return (
+            Favorite.objects.filter(user=self.request.user)
+            .select_related("product", "product__category")
+            .prefetch_related(product_images)
+        )
+
+
+class FavoriteDeleteView(generics.DestroyAPIView):
+    serializer_class = FavoriteSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [BasicAuthentication, SessionAuthentication]
+    lookup_url_kwarg = "favorite_id"
+
+    def get_queryset(self):
+        return Favorite.objects.filter(user=self.request.user)

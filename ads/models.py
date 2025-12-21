@@ -158,3 +158,28 @@ class Ad(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Favorite(models.Model):
+    user = models.ForeignKey(
+        "users.User",
+        on_delete=models.CASCADE,
+        related_name="favorites",
+    )
+    product = models.ForeignKey(
+        "Product",
+        on_delete=models.CASCADE,
+        related_name="favorited_by",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("user", "product")
+        indexes = [
+            models.Index(fields=["user", "product"], name="idx_user_product"),
+            models.Index(fields=["created_at"], name="idx_created_at"),
+        ]
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.user.email} - {self.product.name}"

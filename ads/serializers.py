@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Ad, Category, Product, ProductImage, Store
+from .models import Ad, Category, Favorite, Product, ProductImage, Store
 
 
 # Categories
@@ -121,3 +121,21 @@ class AdSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ad
         fields = "__all__"
+
+
+class FavoriteSerializer(serializers.ModelSerializer):
+    product = ProductListSerializer(read_only=True)
+    product_id = serializers.PrimaryKeyRelatedField(
+        queryset=Product.objects.all(), source="product", write_only=True
+    )
+
+    class Meta:
+        model = Favorite
+        fields = ["id", "user", "product", "product_id", "created_at"]
+        read_only_fields = ["user", "created_at"]
+
+    def create(self, validated_data):
+        user = self.context["request"].user
+        validated_data["user"] = user
+        favorite, created = Favorite.objects.get_or_create(**validated_data)
+        return favorite

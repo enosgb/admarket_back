@@ -36,8 +36,8 @@ API for listing and manage Ads
   - [ ] Cache
 - [ ] Marketplace
 - [ ] Features
-  - [ ] Filters and Sorting
-  - [ ] Favorites
+  - [x] Filters and Sorting
+  - [x] Favorites
   - [ ] Delay - Front End Loading
 - [ ] Optimization
   - [x] Pagination

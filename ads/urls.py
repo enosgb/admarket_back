@@ -5,6 +5,8 @@ from .views import (
     AdRetrieveUpdateDestroyView,
     CategoryListAndCreateView,
     CategoryRetrieveUpdateDestroyView,
+    FavoriteDeleteView,
+    FavoriteListCreateView,
     ProductImageCreateView,
     ProductImageRetrieveUpdateDestroyView,
     ProductListCreateView,
@@ -53,5 +55,11 @@ urlpatterns = [
         "<int:id>/",
         AdRetrieveUpdateDestroyView.as_view(),
         name="ads_retrieve_update_destroy",
+    ),
+    path("favorites/", FavoriteListCreateView.as_view(), name="favorites_list_create"),
+    path(
+        "favorites/<int:favorite_id>/",
+        FavoriteDeleteView.as_view(),
+        name="favorite_delete",
     ),
 ]
