@@ -17,6 +17,12 @@ class CategorySimpleSerializer(serializers.ModelSerializer):
 
 
 # Products
+class ProductImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductImage
+        fields = ("id", "image", "is_main")
+
+
 class ProductListSerializer(serializers.ModelSerializer):
     category = CategorySimpleSerializer(read_only=True)
     main_image = serializers.ImageField(
@@ -37,26 +43,12 @@ class ProductListSerializer(serializers.ModelSerializer):
             "sale_price",
         )
 
-
-class ProductCreateUpdateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Product
-        fields = (
-            "id",
-            "name",
-            "description",
-            "active",
-            "category",
-            "stock",
-            "cost_price",
-            "sale_price",
-        )
-
-
-class ProductImageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ProductImage
-        fields = ("id", "image", "is_main")
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        request = self.context.get("request")
+        if request and not (request.user and request.user.is_staff):
+            rep.pop("cost_price", None)
+        return rep
 
 
 class ProductDetailSerializer(serializers.ModelSerializer):
@@ -79,6 +71,28 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             "updated_at",
         )
 
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        request = self.context.get("request")
+        if request and not (request.user and request.user.is_staff):
+            rep.pop("cost_price", None)
+        return rep
+
+
+class ProductCreateUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = (
+            "id",
+            "name",
+            "description",
+            "active",
+            "category",
+            "stock",
+            "cost_price",
+            "sale_price",
+        )
+
 
 class ProductImageCreateSerializer(serializers.ModelSerializer):
     class Meta:
@@ -99,10 +113,17 @@ class ProductImageCreateSerializer(serializers.ModelSerializer):
         return attrs
 
 
-class ProductSimpleSerializer(serializers.ModelSerializer):
+class ProductSimpleWithMainImageSerializer(serializers.ModelSerializer):
+    main_image = serializers.SerializerMethodField()
+
     class Meta:
         model = Product
-        fields = ["id", "name", "sale_price"]
+        fields = ["id", "name", "sale_price", "main_image"]
+
+    def get_main_image(self, obj):
+        if hasattr(obj, "main_image") and obj.main_image:
+            return obj.main_image[0].image.url
+        return None
 
 
 # Stores
@@ -116,11 +137,33 @@ class StoreSerializer(serializers.ModelSerializer):
 
 
 class AdSerializer(serializers.ModelSerializer):
-    product = ProductSimpleSerializer(read_only=True)
+    product = ProductSimpleWithMainImageSerializer(read_only=True)
+
+    class Meta:
+        model = Ad
+        fields = [
+            "id",
+            "title",
+            "description",
+            "active",
+            "published",
+            "store",
+            "product",
+            "created_at",
+            "updated_at",
+        ]
+
+
+class AdDetailSerializer(serializers.ModelSerializer):
+    product = ProductDetailSerializer(read_only=True)
 
     class Meta:
         model = Ad
         fields = "__all__"
+        read_only_fields = ["id", "created_at", "updated_at"]
+
+
+# Favorites
 
 
 class FavoriteSerializer(serializers.ModelSerializer):

@@ -4,13 +4,14 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, generics
 from rest_framework.authentication import BasicAuthentication, SessionAuthentication
 from rest_framework.parsers import FormParser, MultiPartParser
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from ads.filters import AdFilter
 
 from .models import Ad, Category, Favorite, Product, ProductImage, Store
 from .permissions import IsAdminOrReadOnly
 from .serializers import (
+    AdDetailSerializer,
     AdSerializer,
     CategorySerializer,
     FavoriteSerializer,
@@ -174,7 +175,6 @@ class StoreRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
 
 # ADS
 class AdCreateAndListView(generics.ListCreateAPIView):
-    serializer_class = AdSerializer
     authentication_classes = [BasicAuthentication, SessionAuthentication]
     permission_classes = [IsAuthenticated, IsAdminOrReadOnly]
 
@@ -197,13 +197,25 @@ class AdCreateAndListView(generics.ListCreateAPIView):
     ordering = ["-created_at"]
 
     def get_queryset(self):
-        return Ad.objects.select_related("store", "product").prefetch_related(
-            "product__images"
+        # Prefetch apenas main image para list
+        main_images = Prefetch(
+            "product__images",
+            queryset=ProductImage.objects.filter(is_main=True),
+            to_attr="main_image",
         )
+        return Ad.objects.select_related("store", "product").prefetch_related(
+            main_images
+        )
+
+    def get_serializer_class(self):
+        # List → main image; Create → detail completo
+        if self.request.method == "POST":
+            return AdDetailSerializer
+        return AdSerializer
 
 
 class AdRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = AdSerializer
+    serializer_class = AdDetailSerializer
     authentication_classes = [BasicAuthentication, SessionAuthentication]
     permission_classes = [IsAuthenticated, IsAdminOrReadOnly]
     lookup_field = "id"
@@ -211,6 +223,55 @@ class AdRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         return Ad.objects.select_related("store", "product").prefetch_related(
             "product__images"
+        )
+
+
+class AdPublicListView(generics.ListAPIView):
+    permission_classes = [AllowAny]
+
+    filter_backends = [
+        DjangoFilterBackend,
+        filters.SearchFilter,
+        filters.OrderingFilter,
+    ]
+    filterset_class = None
+    search_fields = ["title", "description"]
+    ordering_fields = [
+        "id",
+        "title",
+        "active",
+        "published",
+        "store",
+        "product",
+        "created_at",
+    ]
+    ordering = ["-created_at"]
+
+    serializer_class = AdSerializer
+
+    def get_queryset(self):
+        main_images = Prefetch(
+            "product__images",
+            queryset=ProductImage.objects.filter(is_main=True),
+            to_attr="main_image",
+        )
+        return (
+            Ad.objects.filter(active=True, published=True)
+            .select_related("product", "store")
+            .prefetch_related(main_images)
+        )
+
+
+class AdPublicDetailView(generics.RetrieveAPIView):
+    permission_classes = [AllowAny]
+    lookup_field = "id"
+    serializer_class = AdDetailSerializer
+
+    def get_queryset(self):
+        return (
+            Ad.objects.filter(active=True, published=True)
+            .select_related("product", "store")
+            .prefetch_related("product__images")
         )
 
 

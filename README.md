@@ -31,10 +31,10 @@ API for listing and manage Ads
   - [ ] Cache
 - [ ] Ads management
   - [x] CRUD
+  - [x] Public Ads
   - [x] Filters and Sorting  
   - [x] Tests
   - [ ] Cache
-- [ ] Marketplace
 - [ ] Features
   - [x] Filters and Sorting
   - [x] Favorites

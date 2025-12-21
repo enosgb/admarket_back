@@ -221,3 +221,92 @@ class TestAdProductPriceFilter:
         assert response.status_code == 200
         for ad in results:
             assert float(ad["product"]["sale_price"]) >= 1000
+
+
+@pytest.mark.django_db
+class TestAdPublicAPI:
+
+    @pytest.fixture
+    def category(self):
+        return Category.objects.create(name="Eletrônicos", active=True)
+
+    @pytest.fixture
+    def store(self):
+        return Store.objects.create(name="Loja Teste")
+
+    @pytest.fixture
+    def product(self, category):
+        return Product.objects.create(
+            name="Produto Teste", category=category, cost_price=100, sale_price=200
+        )
+
+    @pytest.fixture
+    def ad_factory(self, store, product):
+        def create_ad(**kwargs):
+            return Ad.objects.create(store=store, product=product, **kwargs)
+
+        return create_ad
+
+    def test_public_list_only_active_and_published(self, client, ad_factory):
+        ad_factory(title="Ativo Publicado", active=True, published=True)
+        ad_factory(title="Inativo", active=False, published=True)
+        ad_factory(title="Não publicado", active=True, published=False)
+
+        url = reverse("ad_public_list")
+        response = client.get(url)
+        results = response.data["results"]
+
+        assert response.status_code == 200
+        assert len(results) == 1
+        assert results[0]["title"] == "Ativo Publicado"
+
+    def test_public_list_main_image_only(self, client, ad_factory, product):
+        ad_factory(title="Ad com Imagem", active=True, published=True)
+        product.images.create(image="test_image.jpg", is_main=True)
+        product.images.create(image="outro.jpg", is_main=False)
+
+        url = reverse("ad_public_list")
+        response = client.get(url)
+        data = response.data["results"][0]["product"]
+        assert "main_image" in data
+        assert "cost_price" not in data
+
+    def test_public_detail_only_active_and_published(self, client, ad_factory):
+        ad_active = ad_factory(title="Ativo Publicado", active=True, published=True)
+        ad_inactive = ad_factory(title="Inativo", active=False, published=True)
+
+        url_active = reverse("ad_public_detail", args=[ad_active.id])
+        response_active = client.get(url_active)
+        assert response_active.status_code == 200
+        assert response_active.data["title"] == "Ativo Publicado"
+
+        url_inactive = reverse("ad_public_detail", args=[ad_inactive.id])
+        response_inactive = client.get(url_inactive)
+        assert response_inactive.status_code == 404
+
+    def test_public_detail_all_images_and_no_cost_price(
+        self, client, ad_factory, product
+    ):
+        ad = ad_factory(title="Ad Detalhe", active=True, published=True)
+        product.images.create(image="img1.jpg", is_main=True)
+        product.images.create(image="img2.jpg", is_main=False)
+
+        url = reverse("ad_public_detail", args=[ad.id])
+        response = client.get(url)
+        product_data = response.data["product"]
+
+        assert len(product_data["images"]) == 2
+
+        assert "cost_price" not in product_data
+
+    def test_public_list_and_detail_permission_allow_any(self, client, ad_factory):
+        ad = ad_factory(title="Ad Público", active=True, published=True)
+
+        url_list = reverse("ad_public_list")
+        url_detail = reverse("ad_public_detail", args=[ad.id])
+
+        response_list = client.get(url_list)
+        response_detail = client.get(url_detail)
+
+        assert response_list.status_code == 200
+        assert response_detail.status_code == 200
