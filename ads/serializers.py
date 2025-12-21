@@ -99,6 +99,12 @@ class ProductImageCreateSerializer(serializers.ModelSerializer):
         return attrs
 
 
+class ProductSimpleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = ["id", "name", "sale_price"]
+
+
 # Stores
 class StoreSerializer(serializers.ModelSerializer):
     class Meta:
@@ -107,8 +113,11 @@ class StoreSerializer(serializers.ModelSerializer):
 
 
 # ADS
+
+
 class AdSerializer(serializers.ModelSerializer):
+    product = ProductSimpleSerializer(read_only=True)
+
     class Meta:
         model = Ad
         fields = "__all__"
-        read_only_fields = ["created_at", "updated_at"]

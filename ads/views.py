@@ -6,6 +6,8 @@ from rest_framework.authentication import BasicAuthentication, SessionAuthentica
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 
+from ads.filters import AdFilter
+
 from .models import Ad, Category, Product, ProductImage, Store
 from .permissions import IsAdminOrReadOnly
 from .serializers import (
@@ -180,14 +182,7 @@ class AdCreateAndListView(generics.ListCreateAPIView):
         filters.SearchFilter,
         filters.OrderingFilter,
     ]
-    filterset_fields = [
-        "active",
-        "published",
-        "store",
-        "product",
-        "start_date",
-        "end_date",
-    ]
+    filterset_class = AdFilter
     search_fields = ["title", "description"]
     ordering_fields = [
         "id",
@@ -201,7 +196,9 @@ class AdCreateAndListView(generics.ListCreateAPIView):
     ordering = ["-created_at"]
 
     def get_queryset(self):
-        return Ad.objects.select_related("store", "product").all()
+        return Ad.objects.select_related("store", "product").prefetch_related(
+            "product__images"
+        )
 
 
 class AdRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):

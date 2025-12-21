@@ -73,7 +73,7 @@ class TestAdAPI:
         assert len(results) == 1
 
     def test_ordering_by_created_at(self, admin_client, ad_factory):
-        ad1 = ad_factory(title="Ad 1")
+        ad_factory(title="Ad 1")
         ad2 = ad_factory(title="Ad 2")
 
         url = reverse("ads_list")
@@ -144,7 +144,7 @@ class TestAdAPI:
         product2 = Product.objects.create(name="Produto 2", category=category)
 
         ad1 = Ad.objects.create(title="Ad 1", store=store1, product=product1)
-        ad2 = Ad.objects.create(title="Ad 2", store=store2, product=product2)
+        Ad.objects.create(title="Ad 2", store=store2, product=product2)
 
         url = reverse("ads_list")
         response = admin_client.get(url, {"store": store1.id, "product": product1.id})
@@ -154,11 +154,70 @@ class TestAdAPI:
 
     def test_filter_by_start_and_end_date(self, admin_client, ad_factory):
         now = timezone.now()
-        ad1 = ad_factory(title="Ad Hoje", start_date=now)
-        ad2 = ad_factory(title="Ad Amanhã", start_date=now + timezone.timedelta(days=1))
+        ad_factory(title="Ad Hoje", start_date=now)
+        ad_factory(title="Ad Amanhã", start_date=now + timezone.timedelta(days=1))
 
         url = reverse("ads_list")
         response = admin_client.get(url, {"start_date": now.isoformat()})
         results = response.data["results"]
         assert len(results) >= 1
         assert any(ad["title"] == "Ad Hoje" for ad in results)
+
+
+@pytest.mark.django_db
+class TestAdProductPriceFilter:
+
+    @pytest.fixture
+    def category(self):
+        return Category.objects.create(name="Eletrônicos", active=True)
+
+    @pytest.fixture
+    def store(self):
+        return Store.objects.create(name="Loja Teste")
+
+    @pytest.fixture
+    def product_low(self, category):
+        return Product.objects.create(
+            name="Produto Barato", category=category, cost_price=100, sale_price=200
+        )
+
+    @pytest.fixture
+    def product_high(self, category):
+        return Product.objects.create(
+            name="Produto Caro", category=category, cost_price=1000, sale_price=1500
+        )
+
+    @pytest.fixture
+    def ad_factory(self, store):
+        def create_ad(product, **kwargs):
+            return Ad.objects.create(store=store, product=product, **kwargs)
+
+        return create_ad
+
+    def test_filter_by_product_sale_price_lte(
+        self, admin_client, ad_factory, product_low, product_high
+    ):
+        ad_factory(product=product_low, title="Ad Barato")
+        ad_factory(product=product_high, title="Ad Caro")
+
+        url = reverse("ads_list") + "?product_sale_price__lte=500"
+        response = admin_client.get(url)
+        results = response.data["results"]
+
+        assert response.status_code == 200
+        for ad in results:
+            assert float(ad["product"]["sale_price"]) <= 500
+
+    def test_filter_by_product_sale_price_gte(
+        self, admin_client, ad_factory, product_low, product_high
+    ):
+        ad_factory(product=product_low, title="Ad Barato")
+        ad_factory(product=product_high, title="Ad Caro")
+
+        url = reverse("ads_list") + "?product_sale_price__gte=1000"
+        response = admin_client.get(url)
+        results = response.data["results"]
+
+        assert response.status_code == 200
+        for ad in results:
+            assert float(ad["product"]["sale_price"]) >= 1000
