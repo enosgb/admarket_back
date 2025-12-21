@@ -1,8 +1,9 @@
 from rest_framework import serializers
 
-from .models import Category, Product, ProductImage
+from .models import Category, Product, ProductImage, Store
 
 
+# Categories
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
@@ -15,6 +16,7 @@ class CategorySimpleSerializer(serializers.ModelSerializer):
         fields = ("id", "name", "image")
 
 
+# Products
 class ProductListSerializer(serializers.ModelSerializer):
     category = CategorySimpleSerializer(read_only=True)
     main_image = serializers.ImageField(
@@ -86,3 +88,10 @@ class ProductImageCreateSerializer(serializers.ModelSerializer):
                     {"is_main": "Este produto já possui uma imagem principal."}
                 )
         return attrs
+
+
+# Stores
+class StoreSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Store
+        fields = "__all__"

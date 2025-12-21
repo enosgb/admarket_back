@@ -25,6 +25,10 @@ API for listing and manage Ads
   - [x] Tests
   - [ ] Cache
 - [ ] Ads Store management
+  - [x] CRUD
+  - [x] Filters and Sorting  
+  - [x] Tests
+  - [ ] Cache
 - [ ] Ads management
 - [ ] Marketplace
 - [ ] Features

@@ -7,6 +7,8 @@ from .views import (
     ProductImageRetrieveUpdateDestroyView,
     ProductListCreateView,
     ProductRetrieveUpdateDestroyView,
+    StoreCreateAndListView,
+    StoreRetrieveUpdateDestroyView,
 )
 
 urlpatterns = [
@@ -37,5 +39,11 @@ urlpatterns = [
         "products/images/<int:id>/",
         ProductImageRetrieveUpdateDestroyView.as_view(),
         name="product_image_update-delete",
+    ),
+    path("stores/", StoreCreateAndListView.as_view(), name="ads_stores_list"),
+    path(
+        "stores/<int:id>",
+        StoreRetrieveUpdateDestroyView.as_view(),
+        name="ads_stores_retrieve_update_destroy",
     ),
 ]

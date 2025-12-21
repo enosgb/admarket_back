@@ -84,3 +84,33 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Store(models.Model):
+    name = models.CharField(max_length=150)
+    image = models.ImageField(
+        upload_to="admaker/stores/images/",
+        storage=MediaCloudinaryStorage(),
+        blank=True,
+        null=True,
+    )
+    active = models.BooleanField(default=True)
+    city = models.CharField(max_length=100, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+    state = models.CharField(max_length=100, blank=True, null=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["name"]),
+            models.Index(fields=["active"]),
+            models.Index(fields=["city"]),
+            models.Index(fields=["state"]),
+            models.Index(fields=["active", "city", "state"]),
+            models.Index(fields=["created_at"]),
+        ]
+
+    def __str__(self):
+        return self.name

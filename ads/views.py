@@ -6,7 +6,7 @@ from rest_framework.authentication import BasicAuthentication, SessionAuthentica
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 
-from .models import Category, Product, ProductImage
+from .models import Category, Product, ProductImage, Store
 from .permissions import IsAdminOrReadOnly
 from .serializers import (
     CategorySerializer,
@@ -14,6 +14,7 @@ from .serializers import (
     ProductDetailSerializer,
     ProductImageCreateSerializer,
     ProductListSerializer,
+    StoreSerializer,
 )
 from .swagger_schemas import (
     products_images_create_schema,
@@ -21,6 +22,7 @@ from .swagger_schemas import (
 )
 
 
+# CATEGORIES
 class CategoryListAndCreateView(generics.ListCreateAPIView):
     queryset = Category.objects.all().order_by("name")
     serializer_class = CategorySerializer
@@ -49,6 +51,7 @@ class CategoryRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     lookup_field = "id"
 
 
+# Products
 class ProductListCreateView(generics.ListCreateAPIView):
     authentication_classes = [BasicAuthentication, SessionAuthentication]
     permission_classes = [IsAuthenticated, IsAdminOrReadOnly]
@@ -119,3 +122,31 @@ class ProductImageRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIVie
     @products_images_update_schema
     def patch(self, request, *args, **kwargs):
         return super().patch(request, *args, **kwargs)
+
+
+# Stores
+class StoreCreateAndListView(generics.ListCreateAPIView):
+    queryset = Store.objects.all()
+    serializer_class = StoreSerializer
+    authentication_classes = [BasicAuthentication, SessionAuthentication]
+    permission_classes = [IsAuthenticated, IsAdminOrReadOnly]
+    parser_classes = [MultiPartParser, FormParser]
+
+    filter_backends = [
+        DjangoFilterBackend,
+        filters.SearchFilter,
+        filters.OrderingFilter,
+    ]
+    filterset_fields = ["active"]
+    search_fields = ["name", "city", "state"]
+    ordering_fields = ["id", "name", "active", "city", "state", "created_at"]
+    ordering = ["name"]
+
+
+class StoreRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Store.objects.all()
+    serializer_class = StoreSerializer
+    authentication_classes = [BasicAuthentication, SessionAuthentication]
+    permission_classes = [IsAuthenticated, IsAdminOrReadOnly]
+    parser_classes = [MultiPartParser, FormParser]
+    lookup_field = "id"
