@@ -114,3 +114,39 @@ class Store(models.Model):
 
     def __str__(self):
         return self.name
+
+
+# ADS
+class Ad(models.Model):
+    title = models.CharField(max_length=100)
+    description = models.TextField(blank=True, null=True)
+
+    product = models.ForeignKey(
+        "Product", on_delete=models.SET_NULL, related_name="ads", null=True, blank=True
+    )
+    store = models.ForeignKey(
+        "Store", on_delete=models.SET_NULL, related_name="ads", null=True, blank=True
+    )
+
+    active = models.BooleanField(default=True)
+    published = models.BooleanField(default=True)
+    start_date = models.DateTimeField(blank=True, null=True)
+    end_date = models.DateTimeField(blank=True, null=True)
+    slug = models.SlugField(max_length=120, unique=True, blank=True, null=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["active"]),
+            models.Index(fields=["published"]),
+            models.Index(fields=["store"]),
+            models.Index(fields=["product"]),
+            models.Index(fields=["created_at"]),
+            models.Index(fields=["active", "published"]),
+        ]
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.title

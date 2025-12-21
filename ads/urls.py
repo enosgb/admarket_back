@@ -1,6 +1,8 @@
 from django.urls import path
 
 from .views import (
+    AdCreateAndListView,
+    AdRetrieveUpdateDestroyView,
     CategoryListAndCreateView,
     CategoryRetrieveUpdateDestroyView,
     ProductImageCreateView,
@@ -42,8 +44,14 @@ urlpatterns = [
     ),
     path("stores/", StoreCreateAndListView.as_view(), name="ads_stores_list"),
     path(
-        "stores/<int:id>",
+        "stores/<int:id>/",
         StoreRetrieveUpdateDestroyView.as_view(),
         name="ads_stores_retrieve_update_destroy",
+    ),
+    path("", AdCreateAndListView.as_view(), name="ads_list"),
+    path(
+        "<int:id>/",
+        AdRetrieveUpdateDestroyView.as_view(),
+        name="ads_retrieve_update_destroy",
     ),
 ]

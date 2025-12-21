@@ -6,9 +6,10 @@ from rest_framework.authentication import BasicAuthentication, SessionAuthentica
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 
-from .models import Category, Product, ProductImage, Store
+from .models import Ad, Category, Product, ProductImage, Store
 from .permissions import IsAdminOrReadOnly
 from .serializers import (
+    AdSerializer,
     CategorySerializer,
     ProductCreateUpdateSerializer,
     ProductDetailSerializer,
@@ -150,3 +151,48 @@ class StoreRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated, IsAdminOrReadOnly]
     parser_classes = [MultiPartParser, FormParser]
     lookup_field = "id"
+
+
+# ADS
+class AdCreateAndListView(generics.ListCreateAPIView):
+    serializer_class = AdSerializer
+    authentication_classes = [BasicAuthentication, SessionAuthentication]
+    permission_classes = [IsAuthenticated, IsAdminOrReadOnly]
+
+    filter_backends = [
+        DjangoFilterBackend,
+        filters.SearchFilter,
+        filters.OrderingFilter,
+    ]
+    filterset_fields = [
+        "active",
+        "published",
+        "store",
+        "product",
+        "start_date",
+        "end_date",
+    ]
+    search_fields = ["title", "description"]
+    ordering_fields = [
+        "id",
+        "title",
+        "active",
+        "published",
+        "store",
+        "product",
+        "created_at",
+    ]
+    ordering = ["-created_at"]
+
+    def get_queryset(self):
+        return Ad.objects.select_related("store", "product").all()
+
+
+class AdRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = AdSerializer
+    authentication_classes = [BasicAuthentication, SessionAuthentication]
+    permission_classes = [IsAuthenticated, IsAdminOrReadOnly]
+    lookup_field = "id"
+
+    def get_queryset(self):
+        return Ad.objects.select_related("store", "product").all()

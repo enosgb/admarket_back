@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Category, Product, ProductImage, Store
+from .models import Ad, Category, Product, ProductImage, Store
 
 
 # Categories
@@ -95,3 +95,11 @@ class StoreSerializer(serializers.ModelSerializer):
     class Meta:
         model = Store
         fields = "__all__"
+
+
+# ADS
+class AdSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Ad
+        fields = "__all__"
+        read_only_fields = ["created_at", "updated_at"]
