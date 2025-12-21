@@ -208,4 +208,6 @@ class AdRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     lookup_field = "id"
 
     def get_queryset(self):
-        return Ad.objects.select_related("store", "product").all()
+        return Ad.objects.select_related("store", "product").prefetch_related(
+            "product__images"
+        )
