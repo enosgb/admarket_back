@@ -1,4 +1,4 @@
-# AdMarket API
+# AdMarke API
 
 API for listing and manage Ads
 
@@ -31,7 +31,7 @@ API for listing and manage Ads
   - [x] Filters and Sorting  
   - [x] Tests
   - [x] Cache
-- [ ] Features
+- [x] Features
   - [x] Filters and Sorting
   - [x] Favorites
   - [ ] Delay - Front End Loading
@@ -42,7 +42,7 @@ API for listing and manage Ads
 
 ## Clone project
 ```bash
-git clone https://github.com/enosgb/admarket_back
+git clone https://github.com/enosgb/admaker_back
 ```
 ## Navigate to the project folder
 ```bash
