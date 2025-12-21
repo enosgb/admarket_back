@@ -1,5 +1,7 @@
 from django.db.models import Prefetch
 from django.shortcuts import get_object_or_404
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, generics
 from rest_framework.authentication import BasicAuthentication, SessionAuthentication
@@ -25,6 +27,8 @@ from .swagger_schemas import (
     products_images_create_schema,
     products_images_update_schema,
 )
+
+CACHE_TIMEOUT = 60
 
 
 # CATEGORIES
@@ -249,6 +253,10 @@ class AdPublicListView(generics.ListAPIView):
 
     serializer_class = AdSerializer
 
+    @method_decorator(cache_page(CACHE_TIMEOUT))
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
     def get_queryset(self):
         main_images = Prefetch(
             "product__images",
@@ -266,6 +274,10 @@ class AdPublicDetailView(generics.RetrieveAPIView):
     permission_classes = [AllowAny]
     lookup_field = "id"
     serializer_class = AdDetailSerializer
+
+    @method_decorator(cache_page(CACHE_TIMEOUT))
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
 
     def get_queryset(self):
         return (
@@ -290,6 +302,10 @@ class FavoriteListCreateView(generics.ListCreateAPIView):
     search_fields = ["product__name", "product__category__name"]
     ordering_fields = ["created_at", "product__name"]
     ordering = ["-created_at"]
+
+    @method_decorator(cache_page(CACHE_TIMEOUT))
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
 
     def get_queryset(self):
         product_images = Prefetch("product__images")

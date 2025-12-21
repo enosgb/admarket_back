@@ -9,40 +9,36 @@ API for listing and manage Ads
   - [x] Reset password
   - [x] Change password
   - [x] Tests
-- [ ] Users management
+- [x] Users management
   - [x] CRUD
   - [x] Filters and Sorting  
   - [x] Tests
-  - [ ] Cache
-- [ ] Ads Categories management
+- [x] Ads Categories management
   - [x] CRUD
   - [x] Filters and Sorting  
   - [x] Tests
-  - [ ] Cache
-- [ ] Ads Products management
+- [x] Ads Products management
   - [x] CRUD
   - [x] Filters and Sorting  
   - [x] Tests
-  - [ ] Cache
-- [ ] Ads Store management
+- [x] Ads Store management
   - [x] CRUD
   - [x] Filters and Sorting  
-  - [x] Tests
-  - [ ] Cache
-- [ ] Ads management
+  - [x] Tests  
+- [x] Ads management
   - [x] CRUD
   - [x] Public Ads
   - [x] Filters and Sorting  
   - [x] Tests
-  - [ ] Cache
+  - [x] Cache
 - [ ] Features
   - [x] Filters and Sorting
   - [x] Favorites
   - [ ] Delay - Front End Loading
 - [ ] Optimization
   - [x] Pagination
-  - [ ] Cache
-- [ ] Tests
+  - [x] Cache
+- [ ] Tests Docs
 
 ## Clone project
 ```bash
