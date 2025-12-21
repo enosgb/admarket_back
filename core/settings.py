@@ -170,3 +170,14 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # FRONT URL
 FRONTEND_URL = "http://localhost:5173"
+
+# Redis Cache
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://redis:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
+    }
+}

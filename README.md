@@ -64,6 +64,7 @@ cd admarket_back
 - django-cloudinary-storage==0.3.0
 - django-filter==25.2
 - djangorestframework==3.16.1
+- django-redis==6.0.0
 - drf-yasg==1.21.11
 - idna==3.11
 - inflection==0.5.1
@@ -83,6 +84,7 @@ cd admarket_back
 - pytokens==0.3.0
 - pytz==2025.2
 - PyYAML==6.0.3
+- redis==7.1.0
 - requests==2.32.5
 - ruff==0.14.10
 - six==1.17.0
@@ -91,7 +93,7 @@ cd admarket_back
 - urllib3==2.6.2
 
 
-## Database - Docker PostgreSQL
+## Database - Docker PostgreSQL  + Redis cache
 ```bash
 docker compose up -d
 ```
