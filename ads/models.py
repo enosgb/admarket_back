@@ -71,6 +71,10 @@ class Product(models.Model):
         related_name="products",
     )
 
+    stock = models.PositiveIntegerField(default=0)
+    cost_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    sale_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -80,6 +84,10 @@ class Product(models.Model):
             models.Index(fields=["name"]),
             models.Index(fields=["active"]),
             models.Index(fields=["category"]),
+            models.Index(fields=["stock"]),
+            models.Index(fields=["cost_price"]),
+            models.Index(fields=["sale_price"]),
+            models.Index(fields=["active", "category"]),
         ]
 
     def __str__(self):

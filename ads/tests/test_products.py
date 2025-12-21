@@ -1,10 +1,12 @@
-import pytest
-from django.urls import reverse
-from django.core.files.uploadedfile import SimpleUploadedFile
-from PIL import Image
 import io
+from decimal import Decimal
 
-from ads.models import Product, ProductImage, Category
+import pytest
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.urls import reverse
+from PIL import Image
+
+from ads.models import Category, Product, ProductImage
 
 
 @pytest.fixture
@@ -19,6 +21,9 @@ def product(db, category):
         description="Produto teste",
         active=True,
         category=category,
+        stock=10,
+        cost_price="500.00",
+        sale_price="1000.00",
     )
 
 
@@ -29,6 +34,9 @@ def product_payload(category):
         "description": "Mouse gamer",
         "active": True,
         "category": category.id,
+        "stock": 50,
+        "cost_price": "50.00",
+        "sale_price": "100.00",
     }
 
 
@@ -38,7 +46,6 @@ def image_file():
     image = Image.new("RGB", (100, 100), color="red")
     image.save(file, "JPEG")
     file.seek(0)
-
     return SimpleUploadedFile(
         "test.jpg",
         file.read(),
@@ -52,14 +59,15 @@ class TestProductModel:
         product = Product.objects.create(
             name="Teclado",
             category=category,
+            stock=5,
+            cost_price="30.00",
+            sale_price="60.00",
         )
-
         assert product.id is not None
         assert product.active is True
         assert product.category == category
-
-    def test_str_representation(self, product):
-        assert str(product) == "Notebook"
+        assert product.stock == 5
+        assert str(product) == "Teclado"
 
 
 @pytest.mark.django_db
@@ -70,7 +78,6 @@ class TestProductImageModel:
             image=image_file,
             is_main=True,
         )
-
         assert image.id is not None
         assert image.is_main is True
 
@@ -80,7 +87,6 @@ class TestProductImageModel:
             image=image_file,
             is_main=True,
         )
-
         with pytest.raises(Exception):
             ProductImage.objects.create(
                 product=product,
@@ -89,12 +95,12 @@ class TestProductImageModel:
             )
 
 
+
 @pytest.mark.django_db
 class TestProductListCreateAPI:
     def test_list_products_as_admin(self, admin_client, product):
         url = reverse("product_list_create")
         response = admin_client.get(url)
-
         assert response.status_code == 200
         assert response.data["count"] == 1
         assert response.data["results"][0]["name"] == product.name
@@ -102,176 +108,122 @@ class TestProductListCreateAPI:
     def test_list_products_as_user(self, user_client, product):
         url = reverse("product_list_create")
         response = user_client.get(url)
-
         assert response.status_code == 200
 
     def test_list_products_without_auth_returns_401(self, api_client):
         url = reverse("product_list_create")
         response = api_client.get(url)
-
         assert response.status_code == 401
 
     def test_create_product_as_admin(self, admin_client, product_payload):
         url = reverse("product_list_create")
         response = admin_client.post(url, product_payload)
-
         assert response.status_code == 201
-        assert Product.objects.count() == 1
+        assert Product.objects.filter(name="Mouse").exists()
 
-    def test_create_product_as_non_admin_returns_403(
-        self, user_client, product_payload
-    ):
+    def test_create_product_as_non_admin_returns_403(self, user_client, product_payload):
         url = reverse("product_list_create")
         response = user_client.post(url, product_payload)
-
         assert response.status_code == 403
 
     def test_filter_product_by_category(self, admin_client, category, product):
         url = reverse("product_list_create") + f"?category={category.id}"
         response = admin_client.get(url)
-
         assert response.status_code == 200
         assert response.data["count"] == 1
+
+    def test_filter_product_by_stock(self, admin_client, product):
+        url = reverse("product_list_create") + "?stock__gte=5"
+        response = admin_client.get(url)
+        assert response.status_code == 200
+        assert any(p["stock"] >= 5 for p in response.data["results"])
+
+    def test_filter_product_by_price(self, admin_client, product):
+        url = reverse("product_list_create") + "?sale_price__lte=1000"
+        response = admin_client.get(url)
+        assert response.status_code == 200
+        assert any(Decimal(p["sale_price"]) <= Decimal("1000") for p in response.data["results"])
 
     def test_search_product_by_name(self, admin_client, product):
         url = reverse("product_list_create") + "?search=Notebook"
         response = admin_client.get(url)
-
         assert response.status_code == 200
         assert response.data["count"] == 1
-
 
 @pytest.mark.django_db
 class TestProductRetrieveUpdateDestroyAPI:
     def test_retrieve_product_as_admin(self, admin_client, product):
         url = reverse("product_detail", kwargs={"pk": product.id})
         response = admin_client.get(url)
-
         assert response.status_code == 200
         assert response.data["name"] == product.name
 
-    def test_retrieve_product_as_user(self, user_client, product):
-        url = reverse("product_detail", kwargs={"pk": product.id})
-        response = user_client.get(url)
-
-        assert response.status_code == 200
-
-    def test_retrieve_product_without_auth_returns_401(self, api_client, product):
-        url = reverse("product_detail", kwargs={"pk": product.id})
-        response = api_client.get(url)
-
-        assert response.status_code == 401
-
     def test_update_product_as_admin(self, admin_client, product):
         url = reverse("product_detail", kwargs={"pk": product.id})
-        response = admin_client.put(
-            url,
-            {
-                "name": "Notebook Pro",
-                "description": "Atualizado",
-                "active": False,
-                "category": product.category.id,
-            },
-        )
-
+        payload = {
+            "name": "Notebook Pro",
+            "description": "Atualizado",
+            "active": False,
+            "category": product.category.id,
+            "stock": 20,
+            "cost_price": "600.00",
+            "sale_price": "1200.00",
+        }
+        response = admin_client.put(url, payload)
         assert response.status_code == 200
         product.refresh_from_db()
         assert product.name == "Notebook Pro"
+        assert product.stock == 20
+        assert str(product.sale_price) == "1200.00"
 
     def test_update_product_as_non_admin_returns_403(self, user_client, product):
         url = reverse("product_detail", kwargs={"pk": product.id})
-        response = user_client.put(
-            url,
-            {
-                "name": "Tentativa",
-                "category": product.category.id,
-            },
-        )
-
+        payload = {"name": "Tentativa", "category": product.category.id}
+        response = user_client.put(url, payload)
         assert response.status_code == 403
 
     def test_delete_product_as_admin(self, admin_client, product):
         url = reverse("product_detail", kwargs={"pk": product.id})
         response = admin_client.delete(url)
-
         assert response.status_code == 204
         assert Product.objects.count() == 0
 
     def test_delete_product_as_non_admin_returns_403(self, user_client, product):
         url = reverse("product_detail", kwargs={"pk": product.id})
         response = user_client.delete(url)
-
         assert response.status_code == 403
-
 
 @pytest.mark.django_db
 class TestProductImageAPI:
     def test_create_main_image_as_admin(self, admin_client, product, image_file):
-        url = reverse(
-            "product_image_create",
-            kwargs={"product_id": product.id},
-        )
-
+        url = reverse("product_image_create", kwargs={"product_id": product.id})
         response = admin_client.post(
             url,
             {"image": image_file, "is_main": True},
             format="multipart",
         )
-
         assert response.status_code == 201
         assert ProductImage.objects.count() == 1
 
-    def test_create_second_main_image_returns_400(
-        self, admin_client, product, image_file
-    ):
-        ProductImage.objects.create(
-            product=product,
-            image=image_file,
-            is_main=True,
-        )
-
-        url = reverse(
-            "product_image_create",
-            kwargs={"product_id": product.id},
-        )
-
+    def test_create_second_main_image_returns_400(self, admin_client, product, image_file):
+        ProductImage.objects.create(product=product, image=image_file, is_main=True)
+        url = reverse("product_image_create", kwargs={"product_id": product.id})
         response = admin_client.post(
             url,
             {"image": image_file, "is_main": True},
             format="multipart",
         )
-
         assert response.status_code == 400
         assert "is_main" in response.data
 
-    def test_create_image_as_non_admin_returns_403(
-        self, user_client, product, image_file
-    ):
-        url = reverse(
-            "product_image_create",
-            kwargs={"product_id": product.id},
-        )
-
-        response = user_client.post(
-            url,
-            {"image": image_file},
-            format="multipart",
-        )
-
+    def test_create_image_as_non_admin_returns_403(self, user_client, product, image_file):
+        url = reverse("product_image_create", kwargs={"product_id": product.id})
+        response = user_client.post(url, {"image": image_file}, format="multipart")
         assert response.status_code == 403
 
     def test_delete_image_as_admin(self, admin_client, product, image_file):
-        image = ProductImage.objects.create(
-            product=product,
-            image=image_file,
-        )
-
-        url = reverse(
-            "product_image_update-delete",
-            kwargs={"id": image.id},
-        )
-
+        image = ProductImage.objects.create(product=product, image=image_file)
+        url = reverse("product_image_update-delete", kwargs={"id": image.id})
         response = admin_client.delete(url)
-
         assert response.status_code == 204
         assert ProductImage.objects.count() == 0

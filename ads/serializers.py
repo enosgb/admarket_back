@@ -32,6 +32,9 @@ class ProductListSerializer(serializers.ModelSerializer):
             "active",
             "category",
             "main_image",
+            "stock",
+            "cost_price",
+            "sale_price",
         )
 
 
@@ -44,6 +47,9 @@ class ProductCreateUpdateSerializer(serializers.ModelSerializer):
             "description",
             "active",
             "category",
+            "stock",
+            "cost_price",
+            "sale_price",
         )
 
 
@@ -66,6 +72,9 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             "active",
             "category",
             "images",
+            "stock",
+            "cost_price",
+            "sale_price",
             "created_at",
             "updated_at",
         )

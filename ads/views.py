@@ -52,17 +52,27 @@ class CategoryRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     lookup_field = "id"
 
 
-# Products
 class ProductListCreateView(generics.ListCreateAPIView):
     authentication_classes = [BasicAuthentication, SessionAuthentication]
     permission_classes = [IsAuthenticated, IsAdminOrReadOnly]
 
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-    filterset_fields = ["active", "category"]
+    filter_backends = [
+        DjangoFilterBackend,
+        filters.SearchFilter,
+        filters.OrderingFilter,
+    ]
+    filterset_fields = ["active", "category", "stock", "cost_price", "sale_price"]
     search_fields = ["id", "name", "active", "category__name"]
-
-    orderning_filters = ["id", "name", "category__name", "created_at"]
-    orderning = ["name"]
+    ordering_fields = [
+        "id",
+        "name",
+        "category__name",
+        "created_at",
+        "stock",
+        "cost_price",
+        "sale_price",
+    ]
+    ordering = ["name"]
 
     def get_queryset(self):
         return Product.objects.select_related("category").prefetch_related(
@@ -83,6 +93,12 @@ class ProductRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = [BasicAuthentication, SessionAuthentication]
     permission_classes = [IsAuthenticated, IsAdminOrReadOnly]
     serializer_class = ProductDetailSerializer
+
+    filter_backends = [
+        DjangoFilterBackend,
+        filters.SearchFilter,
+        filters.OrderingFilter,
+    ]
 
     def get_queryset(self):
         return Product.objects.select_related("category").prefetch_related("images")
