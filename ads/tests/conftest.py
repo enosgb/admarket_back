@@ -44,3 +44,18 @@ def mock_cloudinary(mocker):
         "cloudinary_storage.storage.MediaCloudinaryStorage._save",
         return_value="fake_image.jpg",
     )
+
+
+@pytest.fixture
+def user(db):
+    return User.objects.create_user(
+        email="user@test.com",
+        password="123456",
+        is_staff=False,
+    )
+
+
+@pytest.fixture
+def user_client(api_client, user):
+    api_client.force_authenticate(user=user)
+    return api_client
