@@ -4,7 +4,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, generics
-from rest_framework.authentication import BasicAuthentication, SessionAuthentication
+from rest_framework.authentication import SessionAuthentication
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
@@ -35,7 +35,7 @@ CACHE_TIMEOUT = 60
 class CategoryListAndCreateView(generics.ListCreateAPIView):
     queryset = Category.objects.all().order_by("name")
     serializer_class = CategorySerializer
-    authentication_classes = [BasicAuthentication, SessionAuthentication]
+    authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated, IsAdminOrReadOnly]
     parser_classes = [MultiPartParser, FormParser]
 
@@ -54,14 +54,14 @@ class CategoryListAndCreateView(generics.ListCreateAPIView):
 class CategoryRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    authentication_classes = [BasicAuthentication, SessionAuthentication]
+    authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated, IsAdminOrReadOnly]
     parser_classes = [MultiPartParser, FormParser]
     lookup_field = "id"
 
 
 class ProductListCreateView(generics.ListCreateAPIView):
-    authentication_classes = [BasicAuthentication, SessionAuthentication]
+    authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated, IsAdminOrReadOnly]
 
     filter_backends = [
@@ -98,7 +98,7 @@ class ProductListCreateView(generics.ListCreateAPIView):
 
 
 class ProductRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-    authentication_classes = [BasicAuthentication, SessionAuthentication]
+    authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated, IsAdminOrReadOnly]
     serializer_class = ProductDetailSerializer
 
@@ -113,7 +113,7 @@ class ProductRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class ProductImageCreateView(generics.CreateAPIView):
-    authentication_classes = [BasicAuthentication, SessionAuthentication]
+    authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated, IsAdminOrReadOnly]
 
     serializer_class = ProductImageCreateSerializer
@@ -135,7 +135,7 @@ class ProductImageCreateView(generics.CreateAPIView):
 class ProductImageRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = ProductImage.objects.all()
     serializer_class = ProductImageCreateSerializer
-    authentication_classes = [BasicAuthentication, SessionAuthentication]
+    authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated, IsAdminOrReadOnly]
     lookup_field = "id"
     parser_classes = [MultiPartParser, FormParser]
@@ -153,7 +153,7 @@ class ProductImageRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIVie
 class StoreCreateAndListView(generics.ListCreateAPIView):
     queryset = Store.objects.all()
     serializer_class = StoreSerializer
-    authentication_classes = [BasicAuthentication, SessionAuthentication]
+    authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated, IsAdminOrReadOnly]
     parser_classes = [MultiPartParser, FormParser]
 
@@ -171,7 +171,7 @@ class StoreCreateAndListView(generics.ListCreateAPIView):
 class StoreRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Store.objects.all()
     serializer_class = StoreSerializer
-    authentication_classes = [BasicAuthentication, SessionAuthentication]
+    authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated, IsAdminOrReadOnly]
     parser_classes = [MultiPartParser, FormParser]
     lookup_field = "id"
@@ -179,7 +179,7 @@ class StoreRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
 
 # ADS
 class AdCreateAndListView(generics.ListCreateAPIView):
-    authentication_classes = [BasicAuthentication, SessionAuthentication]
+    authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated, IsAdminOrReadOnly]
 
     filter_backends = [
@@ -220,7 +220,7 @@ class AdCreateAndListView(generics.ListCreateAPIView):
 
 class AdRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = AdDetailSerializer
-    authentication_classes = [BasicAuthentication, SessionAuthentication]
+    authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated, IsAdminOrReadOnly]
     lookup_field = "id"
 
@@ -291,7 +291,7 @@ class AdPublicDetailView(generics.RetrieveAPIView):
 class FavoriteListCreateView(generics.ListCreateAPIView):
     serializer_class = FavoriteSerializer
     permission_classes = [IsAuthenticated]
-    authentication_classes = [BasicAuthentication, SessionAuthentication]
+    authentication_classes = [SessionAuthentication]
 
     filter_backends = [
         DjangoFilterBackend,
@@ -319,7 +319,7 @@ class FavoriteListCreateView(generics.ListCreateAPIView):
 class FavoriteDeleteView(generics.DestroyAPIView):
     serializer_class = FavoriteSerializer
     permission_classes = [IsAuthenticated]
-    authentication_classes = [BasicAuthentication, SessionAuthentication]
+    authentication_classes = [SessionAuthentication]
     lookup_url_kwarg = "favorite_id"
 
     def get_queryset(self):

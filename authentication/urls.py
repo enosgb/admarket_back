@@ -2,13 +2,17 @@ from django.urls import path
 
 from .views import (
     ChangePasswordView,
+    CurrentUserView,
     LoginView,
     LogoutView,
     ResetPasswordConfirmView,
     ResetPasswordRequestView,
+    csrf,
 )
 
 urlpatterns = [
+    path("csrf/", csrf),
+    path("current_user/", CurrentUserView.as_view(), name="current_user"),
     path("login/", LoginView.as_view(), name="login"),
     path("logout/", LogoutView.as_view(), name="logout"),
     path("reset_password/", ResetPasswordRequestView.as_view(), name="reset_password"),

@@ -57,6 +57,7 @@ cd admarket_back
 - click==8.3.1
 - cloudinary==1.44.1
 - Django==6.0
+- django-cors-headers==4.9.0
 - django-cloudinary-storage==0.3.0
 - django-filter==25.2
 - djangorestframework==3.16.1

@@ -1,6 +1,6 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, generics
-from rest_framework.authentication import BasicAuthentication, SessionAuthentication
+from rest_framework.authentication import SessionAuthentication
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 
@@ -12,7 +12,7 @@ from .serializers import UserSerializer
 class UserListAndCreateView(generics.ListCreateAPIView):
     queryset = User.objects.all().order_by("-id")
     serializer_class = UserSerializer
-    authentication_classes = [BasicAuthentication, SessionAuthentication]
+    authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated, IsAdminOrSelf]
     parser_classes = [MultiPartParser, FormParser]
 
@@ -31,7 +31,7 @@ class UserListAndCreateView(generics.ListCreateAPIView):
 class UserRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    authentication_classes = [BasicAuthentication, SessionAuthentication]
+    authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated, IsAdminOrSelf]
     parser_classes = [MultiPartParser, FormParser]
     lookup_field = "id"
