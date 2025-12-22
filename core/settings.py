@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "drf_yasg",
     "django_filters",
+    "core",
     "users",
     "ads.apps.AdsConfig",
 ]

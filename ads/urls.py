@@ -12,6 +12,7 @@ from .views import (
     ProductImageCreateView,
     ProductImageRetrieveUpdateDestroyView,
     ProductListCreateView,
+    ProductListView,
     ProductRetrieveUpdateDestroyView,
     StoreCreateAndListView,
     StoreRetrieveUpdateDestroyView,
@@ -26,6 +27,7 @@ urlpatterns = [
         CategoryRetrieveUpdateDestroyView.as_view(),
         name="ads_categories_retrieve_update_destroy",
     ),
+    path("products/public/", ProductListView.as_view(), name="product_list"),
     path(
         "products/",
         ProductListCreateView.as_view(),

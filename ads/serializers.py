@@ -25,10 +25,6 @@ class ProductImageSerializer(serializers.ModelSerializer):
 
 class ProductListSerializer(serializers.ModelSerializer):
     category = CategorySimpleSerializer(read_only=True)
-    main_image = serializers.ImageField(
-        source="main_image.0.image",
-        read_only=True,
-    )
 
     class Meta:
         model = Product
@@ -36,8 +32,9 @@ class ProductListSerializer(serializers.ModelSerializer):
             "id",
             "name",
             "active",
+            "description",
             "category",
-            "main_image",
+            "image",
             "stock",
             "cost_price",
             "sale_price",
@@ -53,7 +50,6 @@ class ProductListSerializer(serializers.ModelSerializer):
 
 class ProductDetailSerializer(serializers.ModelSerializer):
     category = CategorySimpleSerializer(read_only=True)
-    images = ProductImageSerializer(many=True, read_only=True)
 
     class Meta:
         model = Product
@@ -63,7 +59,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             "description",
             "active",
             "category",
-            "images",
+            "image",
             "stock",
             "cost_price",
             "sale_price",
@@ -87,6 +83,7 @@ class ProductCreateUpdateSerializer(serializers.ModelSerializer):
             "name",
             "description",
             "active",
+            "image",
             "category",
             "stock",
             "cost_price",

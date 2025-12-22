@@ -63,6 +63,7 @@ class CategoryRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
 class ProductListCreateView(generics.ListCreateAPIView):
     authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated, IsAdminOrReadOnly]
+    parser_classes = [MultiPartParser, FormParser]
 
     filter_backends = [
         DjangoFilterBackend,
@@ -83,18 +84,56 @@ class ProductListCreateView(generics.ListCreateAPIView):
     ordering = ["name"]
 
     def get_queryset(self):
-        return Product.objects.select_related("category").prefetch_related(
-            Prefetch(
-                "images",
-                queryset=ProductImage.objects.filter(is_main=True),
-                to_attr="main_image",
-            )
-        )
+        return Product.objects.select_related("category")
 
     def get_serializer_class(self):
         if self.request.method == "POST":
             return ProductCreateUpdateSerializer
         return ProductListSerializer
+
+
+class ProductListView(generics.ListAPIView):
+
+    permission_classes = [AllowAny]
+    authentication_classes = []
+
+    serializer_class = ProductListSerializer
+
+    filter_backends = [
+        DjangoFilterBackend,
+        filters.SearchFilter,
+        filters.OrderingFilter,
+    ]
+    filterset_fields = ["category", "stock", "cost_price", "sale_price"]
+    search_fields = ["id", "name", "category__name"]
+    ordering_fields = [
+        "id",
+        "name",
+        "category__name",
+        "created_at",
+        "stock",
+        "cost_price",
+        "sale_price",
+    ]
+    ordering = ["name"]
+
+    def get_queryset(self):
+        return (
+            Product.objects.select_related("category")
+            .filter(active=True)
+            .only(
+                "id",
+                "name",
+                "active",
+                "stock",
+                "cost_price",
+                "sale_price",
+                "created_at",
+                "category__id",
+                "category__name",
+                "category__active",
+            )
+        )
 
 
 class ProductRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
@@ -109,7 +148,7 @@ class ProductRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     ]
 
     def get_queryset(self):
-        return Product.objects.select_related("category").prefetch_related("images")
+        return Product.objects.select_related("category")
 
 
 class ProductImageCreateView(generics.CreateAPIView):
@@ -201,15 +240,7 @@ class AdCreateAndListView(generics.ListCreateAPIView):
     ordering = ["-created_at"]
 
     def get_queryset(self):
-        # Prefetch apenas main image para list
-        main_images = Prefetch(
-            "product__images",
-            queryset=ProductImage.objects.filter(is_main=True),
-            to_attr="main_image",
-        )
-        return Ad.objects.select_related("store", "product").prefetch_related(
-            main_images
-        )
+        return Ad.objects.select_related("store", "product")
 
     def get_serializer_class(self):
         # List → main image; Create → detail completo
@@ -225,9 +256,7 @@ class AdRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     lookup_field = "id"
 
     def get_queryset(self):
-        return Ad.objects.select_related("store", "product").prefetch_related(
-            "product__images"
-        )
+        return Ad.objects.select_related("store", "product")
 
 
 class AdPublicListView(generics.ListAPIView):
@@ -258,15 +287,9 @@ class AdPublicListView(generics.ListAPIView):
         return super().get(request, *args, **kwargs)
 
     def get_queryset(self):
-        main_images = Prefetch(
-            "product__images",
-            queryset=ProductImage.objects.filter(is_main=True),
-            to_attr="main_image",
-        )
-        return (
-            Ad.objects.filter(active=True, published=True)
-            .select_related("product", "store")
-            .prefetch_related(main_images)
+
+        return Ad.objects.filter(active=True, published=True).select_related(
+            "product", "store"
         )
 
 
@@ -280,10 +303,8 @@ class AdPublicDetailView(generics.RetrieveAPIView):
         return super().get(request, *args, **kwargs)
 
     def get_queryset(self):
-        return (
-            Ad.objects.filter(active=True, published=True)
-            .select_related("product", "store")
-            .prefetch_related("product__images")
+        return Ad.objects.filter(active=True, published=True).select_related(
+            "product", "store"
         )
 
 
@@ -308,11 +329,8 @@ class FavoriteListCreateView(generics.ListCreateAPIView):
         return super().get(request, *args, **kwargs)
 
     def get_queryset(self):
-        product_images = Prefetch("product__images")
-        return (
-            Favorite.objects.filter(user=self.request.user)
-            .select_related("product", "product__category")
-            .prefetch_related(product_images)
+        return Favorite.objects.filter(user=self.request.user).select_related(
+            "product", "product__category"
         )
 
 

@@ -120,7 +120,13 @@ Run migrations
 ```bash
 python manage.py migrate
 ```
-Run server
+
+Seed for populate database
 ```bash
-python manage.py runserver
+python manage.py seed
+```
+
+Run server - Importante localhost:8000 for front origin
+```bash
+python manage.py runserver localhost:8000
 ```

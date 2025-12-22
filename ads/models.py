@@ -70,6 +70,12 @@ class Product(models.Model):
         on_delete=models.PROTECT,
         related_name="products",
     )
+    image = models.ImageField(
+        upload_to="admaker/products/images/",
+        storage=MediaCloudinaryStorage(),
+        blank=True,
+        null=True,
+    )
 
     stock = models.PositiveIntegerField(default=0)
     cost_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
