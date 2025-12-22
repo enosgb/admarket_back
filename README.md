@@ -131,8 +131,13 @@ Run server - Importante localhost:8000 for front origin
 python manage.py runserver localhost:8000
 ```
 
+# IMPORTANT
 After run seed 
 
   "Logins disponíveis:\n"
                 "→ Admin: admin@exemplo.com / admin123\n"
                 "→ Usuário normal: usuario@exemplo.com / user123"
+
+# env
+
+An email containing a .env file was sent to enable cloud uploads and email authentication, this file must be pasted into the project's root directory.
