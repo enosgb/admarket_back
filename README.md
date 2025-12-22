@@ -130,3 +130,9 @@ Run server - Importante localhost:8000 for front origin
 ```bash
 python manage.py runserver localhost:8000
 ```
+
+After run seed 
+
+  "Logins disponíveis:\n"
+                "→ Admin: admin@exemplo.com / admin123\n"
+                "→ Usuário normal: usuario@exemplo.com / user123"
